@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+
+
 android {
     namespace = "com.example.fluttertoneapp"
     compileSdk = 35
@@ -58,13 +60,25 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Utilisez seulement ipcam-view qui inclut mjpeg-view
+    implementation("com.github.niqdev:ipcam-view:2.4.1")
+
+    // Gardez les autres
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("androidx.camera:camera-camera2:1.3.2")
     implementation("androidx.camera:camera-lifecycle:1.3.2")
     implementation("androidx.camera:camera-view:1.3.2")
     implementation("org.nanohttpd:nanohttpd:2.3.1")
-    implementation("com.squareup.okhttp3:okhttp:4.9.0")
     implementation("com.squareup.okio:okio:2.9.0")
+
+    // RxJava pour mjpeg
+    implementation("io.reactivex:rxjava:1.3.8")
+    implementation("io.reactivex:rxandroid:1.2.1")
+
+
+
+
+
 
 
 
