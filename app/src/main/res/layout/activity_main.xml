@@ -1,13 +1,25 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:orientation="vertical">
+
+    <!-- Supprime ou commente l'ImageView existant -->
+    <com.example.fluttertoneapp.mjpeg.MjpegView
+        android:id="@+id/mjpegView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#006FFF" />
+
+
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter"
+        tools:visibility="invisible" />
+
+    <!-- Ajoute la WebView -->
 </LinearLayout>

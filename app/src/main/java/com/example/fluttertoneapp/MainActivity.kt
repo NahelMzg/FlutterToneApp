@@ -1,10 +1,11 @@
 package com.example.fluttertoneapp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.*
+import android.os.Bundle
 import android.util.Size
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,11 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
-import java.io.IOException
+import com.example.fluttertoneapp.mjpeg.MjpegInputStream
+import com.example.fluttertoneapp.mjpeg.MjpegView
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -26,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     @Volatile
     private var latestFrame: Bitmap? = null
+
+    private lateinit var mjpegView: MjpegView
 
     private val requestCameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -39,15 +39,31 @@ class MainActivity : AppCompatActivity() {
 
     private var mjpegServer: MJPEGStreamServer? = null
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // ----- Caméra locale -----
         imageView = findViewById(R.id.imageView)
         cameraExecutor = Executors.newSingleThreadExecutor()
         checkCameraPermission()
-
-        // Lancer le serveur MJPEG
         startMJPEGServer()
+
+        // ----- Affichage du flux MJPEG distant traité (PC) -----
+        mjpegView = findViewById(R.id.mjpegView)
+        val mjpegUrl = "http://webcam01.ecn.purdue.edu/mjpg/video.mjpg"
+
+        Thread {
+            val inputStream = MjpegInputStream.read(mjpegUrl)
+            runOnUiThread {
+                if (inputStream != null) {
+                    mjpegView.setSource(inputStream)
+                    mjpegView.setDisplayMode(MjpegView.SIZE_BEST_FIT)
+                    mjpegView.showFps(false) // Si tu veux l'overlay FPS
+                }
+            }
+        }.start()
     }
 
     private fun checkCameraPermission() {
@@ -61,7 +77,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Démarre la caméra avec CameraX et prépare l’analyse d’image */
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
@@ -81,7 +96,6 @@ class MainActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    /** Analyseur : met à jour la dernière frame */
     inner class CameraFrameAnalyzer : ImageAnalysis.Analyzer {
         override fun analyze(imageProxy: ImageProxy) {
             val bitmap = imageProxy.toBitmap()
@@ -93,16 +107,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Conversion ImageProxy -> Bitmap (simplifié) */
     private fun ImageProxy.toBitmap(): Bitmap {
-        // Pour de bien meilleures couleurs, convertir YUV → RGB correctement !
         val buffer = planes[0].buffer
         val bytes = ByteArray(buffer.remaining())
         buffer.get(bytes)
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
-    /** Lancer le serveur MJPEG sur le port 8080 */
     private fun startMJPEGServer() {
         mjpegServer = MJPEGStreamServer { latestFrame }
         mjpegServer?.start()
@@ -112,5 +123,13 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         cameraExecutor.shutdown()
         mjpegServer?.stop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // IMPORTANT: Stoppe l'affichage du flux distant pour libérer les ressources réseau/CPU
+        if (::mjpegView.isInitialized) {
+            mjpegView.stopPlayback()
+        }
     }
 }
