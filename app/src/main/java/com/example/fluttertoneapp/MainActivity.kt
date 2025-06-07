@@ -3,6 +3,7 @@ package com.example.fluttertoneapp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -20,12 +21,18 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import fi.iki.elonen.NanoHTTPD
+import android.media.MediaPlayer
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var mjpegView: MjpegSurfaceView
-    private val url = "http://192.168.50.221:8090/video_feed"  // Corrigé: port 8090 pour votre serveur Python
+    private val url = "http://192.168.200.102:8090/video_feed"  // IP de l'ordinateur sur le réseau local
+    private var soundHttpServer: SoundHttpServer? = null
 
     @Volatile
     private var latestFrame: Bitmap? = null
@@ -53,8 +60,18 @@ class MainActivity : AppCompatActivity() {
         // 2. Démarrer le serveur MJPEG (port 8080) pour que le PC puisse récupérer notre flux
         startMJPEGServer()
 
+        // 2bis. Démarrer le serveur HTTP pour jouer les sons
+        soundHttpServer = SoundHttpServer(this, 8081)
+        soundHttpServer?.start()
+
         // 3. Configurer l'affichage du flux traité provenant du PC (port 8090)
         setupProcessedVideoDisplay()
+
+
+
+
+
+
     }
 
     private fun checkCameraPermission() {
@@ -73,10 +90,20 @@ class MainActivity : AppCompatActivity() {
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
 
+            val resolutionSelector = ResolutionSelector.Builder()
+                .setResolutionStrategy(
+                    ResolutionStrategy(
+                        Size(320, 240),                      // résolution préférée
+                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER // règle de repli : plus bas si indispo
+                    )
+                )
+                .build()
+
             val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(Size(640, 480))  // Résolution plus élevée
+                .setResolutionSelector(resolutionSelector)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
+
 
             imageAnalysis.setAnalyzer(cameraExecutor, CameraFrameAnalyzer())
 
@@ -113,9 +140,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupProcessedVideoDisplay() {
         mjpegView = findViewById(R.id.mjpegView)
+
         mjpegView.holder.addCallback(mjpegView)
         mjpegView.setDisplayMode(DisplayMode.BEST_FIT)
         mjpegView.showFps(false)
+
 
         // Attendre que le serveur démarre et que le PC commence le traitement
         Thread {
@@ -160,5 +189,45 @@ class MainActivity : AppCompatActivity() {
         if (::mjpegView.isInitialized) {
             mjpegView.clearStream()
         }
+
+        soundHttpServer?.stop()
+
     }
+
+    class SoundHttpServer(val context: Context, port: Int = 8081) : NanoHTTPD(port) {
+        private val soundMap = mapOf(
+            "open_hand" to R.raw.open_hand,
+            "fist" to R.raw.fist,
+            "victory" to R.raw.victory,
+            "like" to R.raw.like,
+            "point" to R.raw.point
+        )
+
+        // Stocke les lecteurs audio actifs pour éviter le garbage collection prématuré
+        private val activePlayers = mutableListOf<MediaPlayer>()
+
+        override fun serve(session: IHTTPSession): Response {
+            if (session.method == Method.POST && session.uri == "/play_sound") {
+                val files = HashMap<String, String>()
+                session.parseBody(files)
+                val postData = files["postData"] ?: ""
+                val soundName = postData.trim()
+                soundMap[soundName]?.let { soundRes ->
+                    // Crée un MediaPlayer et conserve une référence
+                    val mediaPlayer = MediaPlayer.create(context, soundRes)
+                    activePlayers.add(mediaPlayer)
+                    mediaPlayer.setOnCompletionListener {
+                        it.release()
+                        activePlayers.remove(it)
+                    }
+                    mediaPlayer.start()
+                    return newFixedLengthResponse("Sound $soundName played")
+                }
+                return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Unknown sound")
+            }
+            return newFixedLengthResponse("OK")
+        }
+    }
+
+
 }
