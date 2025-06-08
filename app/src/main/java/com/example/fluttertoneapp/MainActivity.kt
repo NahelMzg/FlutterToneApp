@@ -2,7 +2,6 @@
 package com.example.fluttertoneapp
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -25,7 +24,6 @@ import fi.iki.elonen.NanoHTTPD
 import android.media.MediaPlayer
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -199,8 +197,10 @@ class MainActivity : AppCompatActivity() {
             "open_hand" to R.raw.open_hand,
             "fist" to R.raw.fist,
             "victory" to R.raw.victory,
-            "like" to R.raw.like,
-            "point" to R.raw.point
+            "ok_sign" to R.raw.ok_sign,
+            "point" to R.raw.point,
+            "shaka" to R.raw.shaka,
+            "l_sign" to R.raw.l_sign,
         )
 
         // Stocke les lecteurs audio actifs pour éviter le garbage collection prématuré
