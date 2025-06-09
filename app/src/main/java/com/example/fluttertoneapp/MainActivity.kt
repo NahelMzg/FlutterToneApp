@@ -24,6 +24,8 @@ import fi.iki.elonen.NanoHTTPD
 import android.media.MediaPlayer
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
+import android.media.AudioManager
+import android.widget.SeekBar
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity() {
 
     @Volatile
     private var latestFrame: Bitmap? = null
+    private lateinit var volumeSlider: SeekBar
+    private lateinit var audioManager: AudioManager
     private var mjpegServer: MJPEGStreamServer? = null
 
     private val requestCameraPermissionLauncher = registerForActivityResult(
@@ -65,10 +69,24 @@ class MainActivity : AppCompatActivity() {
         // 3. Configurer l'affichage du flux traité provenant du PC (port 8090)
         setupProcessedVideoDisplay()
 
+        // 4. Lier le slider au volume
+        volumeSlider = findViewById(R.id.volumeSlider)
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
 
+        volumeSlider.max = maxVolume
+        volumeSlider.progress = currentVolume
 
+        volumeSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0)
+            }
 
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
 
     }
 

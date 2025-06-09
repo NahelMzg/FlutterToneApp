@@ -3,13 +3,282 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:orientation="horizontal"
+    android:background="#000000"> <!-- Fond noir ici -->
+    >
 
+    <!-- Partie gauche : PAD + volume + papillon -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <!-- Grille 1x4 de boutons -->
+        <GridLayout
+            android:id="@+id/padGrid"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:columnCount="1"
+            android:rowCount="1"
+            android:alignmentMode="alignMargins"
+            android:padding="0dp"
+            android:layout_marginBottom="0dp">
+
+            <!-- Bouton 1 -->
+            <ImageButton
+                android:id="@+id/button1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                android:background="@drawable/button_background"
+                android:src="@drawable/piano5"
+                android:scaleType="fitCenter"
+                android:contentDescription="piano" />
+
+
+
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/noticeGrid"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:columnCount="4"
+            android:rowCount="4"
+            android:alignmentMode="alignMargins"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp">
+
+            <!-- Case 0,0 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/open_hand" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="C major"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <!-- Case 0,1 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_column="1"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/fist" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="D major"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <!-- Case 0,2 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_column="2"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ok_sign" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="E minor"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <!-- Case 0,3 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_column="3"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/victory" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="F major"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <!-- Case 1,0 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/shaka" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="G major"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <!-- Case 1,1 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_column="1"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/point" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A minor"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <!-- Case 1,2 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_column="2"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/l_sign" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="B dimin."
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <!-- Case 1,3 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_column="3"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/papillon"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/papillon3"
+                    android:layout_gravity="start"
+                    android:contentDescription="Papillon"/>
+
+            </LinearLayout>
+
+
+
+
+        </GridLayout>
+
+        <!-- Slider de volume -->
+
+        <!-- Image du papillon -->
+
+        <SeekBar
+            android:id="@+id/volumeSlider"
+            android:layout_width="341dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:max="100"
+            android:progress="20"
+            android:progressDrawable="@drawable/seekbar_progress"
+            android:thumb="@drawable/Slider2"
+            android:thumbTint="@null"/>
+
+        <!-- <- Ici ton image -->/>
+
+        <ImageView
+            android:id="@+id/nom_app"
+            android:layout_width="348dp"
+            android:layout_height="80dp"
+            android:layout_gravity="start"
+            android:contentDescription="Papillon"
+            android:src="@drawable/nom3" />
+    </LinearLayout>
     <com.github.niqdev.mjpeg.MjpegSurfaceView
         android:id="@+id/mjpegView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
 
         />
 
+
+
+
 </LinearLayout>
+
+
