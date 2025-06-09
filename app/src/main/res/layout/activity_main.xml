@@ -255,8 +255,8 @@
             android:max="100"
             android:progress="20"
             android:progressDrawable="@drawable/seekbar_progress"
-            android:thumb="@drawable/Slider2"
-            android:thumbTint="@null"/>
+            android:thumb="@drawable/slider2"
+            android:thumbTint="@null" />
 
         <!-- <- Ici ton image -->/>
 
